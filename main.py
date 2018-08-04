@@ -9,14 +9,23 @@ class Block:
         self.timeStamp = timeStamp
         self.data = data
         self.previousBlock = previousBlock
-        self.hash = self.calculateHash(data, timeStamp)
+        self.difficultyIncrement = 0
+        self.hash = self.calculateHash(data, timeStamp, self.difficultyIncrement)
+
 
     
-    def calculateHash(self, data, timeStamp):
-        data = str(data) + str(timeStamp)
+    def calculateHash(self, data, timeStamp, difficultyIncrement):
+        data = str(data) + str(timeStamp) + str(difficultyIncrement)
         data = data.encode()
         hash = hashlib.sha256(data)
         return hash.hexdigest()
+
+    def mineBlock(self,difficulty):
+        difficultyCheck = "0" * difficulty
+        while self.hash[:difficulty] != difficultyCheck:
+            self.hash = self.calculateHash(self.data,self.timeStamp,self.difficultyIncrement)
+            self.difficultyIncrement = self.difficultyIncrement + 1 
+
        
 
 class Blockchain:
@@ -35,8 +44,8 @@ class Blockchain:
     
     def appendBlock(self,newBlock):
         newBlock.previousBlock = self.getLastBlock().hash
-        newBlock.hash = newBlock.calculateHash(newBlock.data,newBlock.timeStamp)
-        '''this is obv not the best way to append a block but wth'''
+        newBlock.mineBlock(2)
+                #this is obv not the best way to append a block but wth
         self.chain.append(newBlock)
 
     def isChainValid(self):
@@ -47,8 +56,6 @@ class Blockchain:
             if (currentBlock.previousBlock != previousBlock.hash):
                 return False
             
-            if (currentBlock.hash != currentBlock.calculateHash(currentBlock.data,currentBlock.timeStamp)):
-                return False
             
         return True
 
@@ -58,11 +65,11 @@ class Blockchain:
 
 
 ezmoney = Blockchain()
-hey =  Block(1,"1",{"amount":5})
-what =  Block(1,"1",{"amount": 69})
+hey =  Block(1,str(datetime.datetime.now()),{"amount":5})
+what =  Block(1,str(datetime.datetime.now()),{"amount": 69})
 ezmoney.appendBlock(hey)
 ezmoney.appendBlock(what)
-"""this is to convert the blockchain into a json format"""
+#this is to convert the blockchain into a json format
 testChain = []
 for x in ezmoney.chain:
     temp = json.dumps(x.__dict__)
@@ -74,3 +81,9 @@ print(ezmoney.isChainValid())
   
 
 
+#---------------------------------debug methods--------------------------#
+#add a block
+#what =  Block(1,"1",{"amount": 69})
+
+#print the whole chain in json format
+#pprint.pprint(testChain)
