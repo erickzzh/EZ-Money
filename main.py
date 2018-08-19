@@ -3,12 +3,6 @@ import datetime
 import json
 import pprint
 
-class Transaction:
-    def __init__(self,fromWallet,toWallet,amount):
-        self.fromWallet = fromWallet
-        self.toWallet = toWallet
-        self.amount = amount
-
 class Block:
     def __init__(self, timeStamp, trans, previousBlock = ''):
         self.timeStamp = timeStamp
@@ -29,8 +23,6 @@ class Block:
             self.hash = self.calculateHash(self.trans,self.timeStamp,self.difficultyIncrement)
             self.difficultyIncrement = self.difficultyIncrement + 1 
 
-       
-    
 class Blockchain:
     def __init__(self):
         self.chain = [self.GenesisBlock()]
@@ -90,6 +82,12 @@ class Blockchain:
                 if transaction.toWallet == walletAddress:
                     balance += transaction.amount
         return balance
+
+class Transaction:
+    def __init__(self,fromWallet,toWallet,amount):
+        self.fromWallet = fromWallet
+        self.toWallet = toWallet
+        self.amount = amount
 
 
 
